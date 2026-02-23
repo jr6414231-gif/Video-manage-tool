@@ -62,6 +62,7 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .bg-animation span {
@@ -83,7 +84,7 @@
 
         .main-container {
             width: 100%;
-            max-width: 500px; /* Perfect for mobile */
+            max-width: 500px;
             position: relative;
             z-index: 1;
             margin: 0 auto;
@@ -175,7 +176,7 @@
             color: var(--dark);
         }
 
-        /* Main Grid Layout - Mobile Single Column */
+        /* Main Grid Layout */
         .editor-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -183,7 +184,7 @@
             margin-bottom: 1.2rem;
         }
 
-        /* Preview Panel - Mobile Optimized */
+        /* Preview Panel */
         .preview-panel {
             background: rgba(10, 10, 26, 0.7);
             backdrop-filter: blur(12px);
@@ -205,7 +206,7 @@
             border-bottom: 1px solid rgba(255, 215, 0, 0.2);
         }
 
-        /* Aspect Ratio Selector - Mobile Optimized */
+        /* Aspect Ratio Selector */
         .aspect-ratio-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -250,7 +251,7 @@
             transform: scale(0.95);
         }
 
-        /* Phone/Video Container - Mobile Optimized */
+        /* Video Container */
         .video-container-wrapper {
             display: flex;
             justify-content: center;
@@ -342,7 +343,7 @@
             display: block;
         }
 
-        /* Controls Panel - Mobile Optimized */
+        /* Controls Panel */
         .controls-panel {
             background: rgba(10, 10, 26, 0.7);
             backdrop-filter: blur(12px);
@@ -352,7 +353,7 @@
             box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.5);
         }
 
-        /* Upload Area - Mobile Optimized */
+        /* Upload Area */
         .upload-area {
             background: rgba(255, 255, 255, 0.03);
             border: 2px dashed rgba(255, 215, 0, 0.4);
@@ -420,7 +421,7 @@
             max-width: 100%;
         }
 
-        /* Frames Section - Mobile Optimized */
+        /* Frames Section */
         .section-title {
             color: var(--text-light);
             font-size: 1.2rem;
@@ -481,7 +482,7 @@
             transform: scale(0.95);
         }
 
-        /* Background Options - Mobile Optimized */
+        /* Background Options */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -528,7 +529,7 @@
         .bg-option[data-bg="dark"] { background: #0a0a1a; }
         .bg-option[data-bg="light"] { background: #f0f0ff; }
 
-        /* Download Button - Mobile Optimized */
+        /* Download Button */
         .download-btn {
             width: 100%;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -560,7 +561,7 @@
             transform: scale(0.97);
         }
 
-        /* Footer - Mobile Optimized */
+        /* Footer */
         .footer {
             margin-top: 1.5rem;
             text-align: center;
@@ -637,7 +638,7 @@
             user-select: none;
         }
 
-        /* Scrollbar hiding but keeping functionality */
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 0.3rem;
             height: 0.3rem;
@@ -659,7 +660,7 @@
     <div class="bg-animation" id="bgAnimation"></div>
 
     <div class="main-container">
-        <!-- Header with Logo and Social Links -->
+        <!-- Header -->
         <div class="header">
             <div class="logo">
                 <div class="logo-icon">L</div>
@@ -678,7 +679,7 @@
 
         <!-- Main Editor Grid -->
         <div class="editor-grid">
-            <!-- Left: Preview Panel -->
+            <!-- Preview Panel -->
             <div class="preview-panel">
                 <div class="panel-title">
                     <i class="fas fa-eye"></i> PREVIEW
@@ -697,7 +698,7 @@
                     </button>
                 </div>
 
-                <!-- Video Preview with Mockup -->
+                <!-- Video Preview -->
                 <div class="video-container-wrapper" id="videoPreviewWrapper">
                     <div class="mockup" id="mockupPhone">
                         <div class="video-container" id="videoContainer">
@@ -706,24 +707,23 @@
                     </div>
                 </div>
 
-                <!-- Background Preview Note -->
                 <div style="text-align: center; margin-top: 0.8rem; color: var(--text-dim); font-size: 0.8rem;">
                     <i class="fas fa-info-circle"></i> Background in final video
                 </div>
             </div>
 
-            <!-- Right: Controls Panel -->
+            <!-- Controls Panel -->
             <div class="controls-panel">
-                <!-- Hidden File Input -->
-                <input type="file" id="videoInput" accept="video/*" capture="environment" style="display: none;">
+                <!-- FIXED: Removed capture="environment" - ab sirf gallery khulegi -->
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
 
                 <!-- Upload Area -->
                 <div class="upload-area" id="uploadBox">
                     <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                     <h3>Upload Video</h3>
-                    <p>Tap to select</p>
+                    <p>Tap to select from gallery</p>
                     <button class="upload-btn" id="selectVideoBtn">
-                        <i class="fas fa-video"></i> Choose
+                        <i class="fas fa-video"></i> Choose from Gallery
                     </button>
                     <div id="fileDisplay" class="file-info"></div>
                 </div>
@@ -781,7 +781,7 @@
             </div>
         </div>
 
-        <!-- Footer with All Links -->
+        <!-- Footer -->
         <div class="footer">
             <div class="brand-links">
                 <a href="https://legend-mods-store.vercel.app/" target="_blank" class="brand-link">
@@ -830,15 +830,16 @@
             let videoFile = null;
             let videoURL = null;
 
-            // Initialize animated background
+            // Initialize animated background (lightweight)
             function initBackground() {
                 const bgAnimation = document.getElementById('bgAnimation');
-                for (let i = 0; i < 30; i++) { // Less particles for mobile
+                // Less particles for better performance
+                for (let i = 0; i < 15; i++) { 
                     const span = document.createElement('span');
                     span.style.left = Math.random() * 100 + '%';
-                    span.style.animationDuration = 10 + Math.random() * 20 + 's';
+                    span.style.animationDuration = 15 + Math.random() * 20 + 's';
                     span.style.animationDelay = Math.random() * 10 + 's';
-                    span.style.width = span.style.height = 5 + Math.random() * 20 + 'px';
+                    span.style.width = span.style.height = 5 + Math.random() * 15 + 'px';
                     bgAnimation.appendChild(span);
                 }
             }
@@ -887,7 +888,7 @@
                 });
             }
 
-            // Handle video selection
+            // Handle video selection - OPTIMIZED
             function handleVideo(file) {
                 if (!file) return;
                 if (!file.type.startsWith('video/')) {
@@ -895,32 +896,55 @@
                     return;
                 }
 
-                videoFile = file;
-                
+                // Clean up previous URL
                 if (videoURL) {
                     URL.revokeObjectURL(videoURL);
                 }
+
+                videoFile = file;
                 videoURL = URL.createObjectURL(file);
                 
+                // Set video source and play
                 previewVideo.src = videoURL;
                 previewVideo.load();
-                previewVideo.play().catch(e => console.log('autoplay failed'));
                 
-                fileDisplay.innerHTML = `<i class="fas fa-check-circle"></i> ${file.name.substring(0, 20)}...`;
+                // Show file name
+                let fileName = file.name;
+                if (fileName.length > 25) {
+                    fileName = fileName.substring(0, 22) + '...';
+                }
+                fileDisplay.innerHTML = `<i class="fas fa-check-circle" style="color: var(--primary);"></i> ${fileName}`;
+                
+                // Enable download button
                 downloadBtn.disabled = false;
+                
+                // Autoplay with error handling
+                previewVideo.play().catch(e => {
+                    console.log('Autoplay prevented, user interaction needed');
+                });
             }
 
             // Event Listeners
             selectBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                videoInput.click();
+                e.stopPropagation();
+                videoInput.click(); // Sirf gallery khulegi, camera nahi
             });
             
-            uploadBox.addEventListener('click', () => videoInput.click());
+            uploadBox.addEventListener('click', (e) => {
+                // Prevent if clicking on button (already handled)
+                if (e.target !== selectBtn) {
+                    videoInput.click();
+                }
+            });
 
             videoInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
-                if (file) handleVideo(file);
+                if (file) {
+                    handleVideo(file);
+                }
+                // Clear input so same file can be selected again
+                videoInput.value = '';
             });
 
             // Frame selection
@@ -982,7 +1006,6 @@
                 videoFile = null;
                 fileDisplay.innerHTML = '';
                 downloadBtn.disabled = true;
-                videoInput.value = '';
                 
                 currentFrame = 'classic';
                 currentBg = 'none';
@@ -1002,7 +1025,7 @@
                 previewWrapper.style.background = 'rgba(0, 0, 0, 0.3)';
             });
 
-            // Download with all effects
+            // Download with all effects - OPTIMIZED
             downloadBtn.addEventListener('click', async function() {
                 if (!previewVideo.src || !videoFile) {
                     alert('Please select a video first');
@@ -1016,18 +1039,19 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
+                    // Smaller size for better performance
                     if (currentRatio === 'youtube') {
-                        canvas.width = 1280; // Smaller for mobile
-                        canvas.height = 720;
+                        canvas.width = 854; // 480p for faster processing
+                        canvas.height = 480;
                     } else if (currentRatio === 'square') {
-                        canvas.width = 720;
-                        canvas.height = 720;
+                        canvas.width = 480;
+                        canvas.height = 480;
                     } else {
-                        canvas.width = 720;
-                        canvas.height = 1280;
+                        canvas.width = 480;
+                        canvas.height = 854;
                     }
 
-                    // Draw background
+                    // Draw background (simplified)
                     if (currentBg === 'gradient1') {
                         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
                         gradient.addColorStop(0, '#667eea');
@@ -1064,13 +1088,6 @@
                     } else if (currentBg === 'light') {
                         ctx.fillStyle = '#f0f0ff';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    } else if (currentBg === 'custom') {
-                        const pattern = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                        pattern.addColorStop(0, '#ffd966');
-                        pattern.addColorStop(0.5, '#2a2a40');
-                        pattern.addColorStop(1, '#ffd966');
-                        ctx.fillStyle = pattern;
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
                     }
 
                     // Draw video
@@ -1078,7 +1095,7 @@
                     const canvasAspect = canvas.width / canvas.height;
                     
                     let drawWidth, drawHeight, drawX, drawY;
-                    const padding = 30;
+                    const padding = 20;
 
                     if (videoAspect > canvasAspect) {
                         drawHeight = canvas.height - padding * 2;
@@ -1096,43 +1113,43 @@
 
                     // Draw frame
                     ctx.save();
-                    ctx.shadowBlur = 20;
-                    ctx.lineWidth = 8;
+                    ctx.shadowBlur = 15;
+                    ctx.lineWidth = 6;
 
                     if (currentFrame === 'neon') {
                         ctx.shadowColor = '#00ffff';
                         ctx.strokeStyle = '#ff00ff';
-                        ctx.strokeRect(drawX - 4, drawY - 4, drawWidth + 8, drawHeight + 8);
+                        ctx.strokeRect(drawX - 3, drawY - 3, drawWidth + 6, drawHeight + 6);
                         
                         ctx.shadowColor = '#ff00ff';
                         ctx.strokeStyle = '#00ffff';
-                        ctx.lineWidth = 4;
-                        ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(drawX - 1, drawY - 1, drawWidth + 2, drawHeight + 2);
                     } else if (currentFrame === 'gold') {
                         ctx.shadowColor = '#ffaa00';
                         ctx.strokeStyle = '#ffd966';
-                        ctx.lineWidth = 10;
-                        ctx.strokeRect(drawX - 5, drawY - 5, drawWidth + 10, drawHeight + 10);
+                        ctx.lineWidth = 8;
+                        ctx.strokeRect(drawX - 4, drawY - 4, drawWidth + 8, drawHeight + 8);
                         
                         ctx.shadowColor = '#b8860b';
                         ctx.strokeStyle = '#ffaa00';
-                        ctx.lineWidth = 5;
+                        ctx.lineWidth = 4;
                         ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
                     } else if (currentFrame === 'silver') {
                         ctx.shadowColor = '#ffffff';
                         ctx.strokeStyle = '#e0e0e0';
-                        ctx.lineWidth = 10;
-                        ctx.strokeRect(drawX - 5, drawY - 5, drawWidth + 10, drawHeight + 10);
+                        ctx.lineWidth = 8;
+                        ctx.strokeRect(drawX - 4, drawY - 4, drawWidth + 8, drawHeight + 8);
                         
                         ctx.shadowColor = '#a0a0a0';
                         ctx.strokeStyle = '#c0c0c0';
-                        ctx.lineWidth = 5;
+                        ctx.lineWidth = 4;
                         ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
                     } else {
                         ctx.shadowColor = '#ffd966';
                         ctx.strokeStyle = '#4a4a70';
-                        ctx.lineWidth = 5;
-                        ctx.strokeRect(drawX - 3, drawY - 3, drawWidth + 6, drawHeight + 6);
+                        ctx.lineWidth = 4;
+                        ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
                         
                         ctx.shadowColor = '#ffd966';
                         ctx.strokeStyle = '#ffd966';
@@ -1142,15 +1159,15 @@
                     ctx.restore();
 
                     // Add watermark
-                    ctx.font = 'bold 30px "Segoe UI", Arial';
+                    ctx.font = 'bold 20px "Segoe UI", Arial';
                     ctx.fillStyle = 'rgba(255, 215, 0, 0.7)';
                     ctx.shadowColor = '#000';
-                    ctx.shadowBlur = 10;
+                    ctx.shadowBlur = 8;
                     ctx.textAlign = 'center';
-                    ctx.fillText('⚡ LEGEND ⚡', canvas.width/2, canvas.height - 40);
+                    ctx.fillText('⚡ LEGEND ⚡', canvas.width/2, canvas.height - 25);
                     ctx.shadowBlur = 0;
 
-                    // Download as PNG (simpler for mobile)
+                    // Download as PNG
                     const link = document.createElement('a');
                     link.download = `LEGEND_${currentFrame}_${Date.now()}.png`;
                     link.href = canvas.toDataURL('image/png');
@@ -1160,7 +1177,7 @@
                     setTimeout(() => {
                         downloadBtn.innerHTML = '<i class="fas fa-download"></i> EXPORT';
                         downloadBtn.disabled = false;
-                    }, 2000);
+                    }, 1500);
 
                 } catch (error) {
                     console.error('Export error:', error);
