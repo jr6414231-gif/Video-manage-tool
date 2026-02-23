@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>LEGEND STUDIO - Mobile Video Editor</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Mobile First Design - REM based scaling */
+        html {
+            font-size: 16px;
+        }
+
+        @media (max-width: 400px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        :root {
+            --primary: #ffd700;
+            --primary-dark: #ffaa00;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --light: #ffffff;
+            --gray: #1a1a2e;
+            --gray-light: #2a2a40;
+            --text-light: #e0e0ff;
+            --text-dim: #a0a0c0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0.8rem;
+            position: relative;
+        }
+
+        /* Animated background - mobile optimized */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 1rem;
+            height: 1rem;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 50%;
+            animation: float 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 0.2; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px; /* Perfect for mobile */
+            position: relative;
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        /* Header - Mobile Optimized */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 1rem;
+            background: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 1.2rem;
+            border-radius: 2.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            width: 3.2rem;
+            height: 3.2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: bold;
+            box-shadow: 0 0 1.2rem var(--primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            text-align: center;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.1rem;
+        }
+
+        .logo-text p {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .social-link {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.4rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .social-link:active {
+            transform: scale(0.9);
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Main Grid Layout - Mobile Single Column */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Preview Panel - Mobile Optimized */
+        .preview-panel {
+            background: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        /* Aspect Ratio Selector - Mobile Optimized */
+        .aspect-ratio-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .ratio-btn {
+            padding: 0.8rem 0.4rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 2rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-btn i {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .ratio-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            border-color: var(--primary);
+            box-shadow: 0 0.5rem 1rem rgba(255, 215, 0, 0.3);
+        }
+
+        .ratio-btn.active i {
+            color: var(--dark);
+        }
+
+        .ratio-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Phone/Video Container - Mobile Optimized */
+        .video-container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 18rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2rem;
+            padding: 1rem;
+            transition: background 0.3s;
+        }
+
+        .mockup {
+            background: linear-gradient(145deg, #1a1a2a, #0f0f1a);
+            border-radius: 2.8rem;
+            padding: 1rem 0.4rem;
+            box-shadow: 
+                0 2rem 2.5rem -1rem #000,
+                0 0 0 2px rgba(255, 215, 0, 0.3),
+                inset 0 -2px 5px rgba(255,215,0,0.2);
+            display: inline-block;
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            transition: all 0.3s;
+        }
+
+        .mockup.youtube-size {
+            max-width: 350px;
+            border-radius: 1.5rem;
+        }
+
+        .mockup.youtube-size .video-container {
+            border-radius: 1rem;
+        }
+
+        .mockup::before {
+            content: "";
+            position: absolute;
+            top: 0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6rem;
+            height: 1.8rem;
+            background: #0a0a1a;
+            border-radius: 1.8rem;
+            z-index: 20;
+            box-shadow: inset 0 2px 5px #000, 0 0 0 1px rgba(255,215,0,0.3);
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .mockup::after {
+            content: "";
+            position: absolute;
+            top: 1.3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2.5rem;
+            height: 0.4rem;
+            background: #1e1e30;
+            border-radius: 0.5rem;
+            z-index: 25;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .mockup.youtube-size::before,
+        .mockup.youtube-size::after {
+            display: none;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 2.2rem;
+            overflow: hidden;
+            aspect-ratio: 9 / 16;
+            width: 100%;
+            position: relative;
+            z-index: 5;
+            border: 2px solid rgba(255,215,0,0.5);
+        }
+
+        .video-container.youtube-ratio {
+            aspect-ratio: 16 / 9;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Controls Panel - Mobile Optimized */
+        .controls-panel {
+            background: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.5);
+        }
+
+        /* Upload Area - Mobile Optimized */
+        .upload-area {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 215, 0, 0.4);
+            border-radius: 2rem;
+            padding: 1.8rem 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .upload-area:active {
+            border-color: var(--primary);
+            background: rgba(255, 215, 0, 0.05);
+            transform: scale(0.98);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 0.6rem;
+        }
+
+        .upload-area h3 {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .upload-area p {
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            border: none;
+            padding: 1rem 1.8rem;
+            border-radius: 3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0.8rem 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0.6rem 1.2rem rgba(255, 215, 0, 0.3);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .upload-btn:active {
+            transform: scale(0.95);
+        }
+
+        .file-info {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-top: 0.6rem;
+            word-break: break-word;
+            background: rgba(0,0,0,0.3);
+            padding: 0.6rem 1rem;
+            border-radius: 2rem;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        /* Frames Section - Mobile Optimized */
+        .section-title {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .frame-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .frame-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 1.5rem;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .frame-option i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .frame-option span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .frame-option.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0.6rem 1.2rem rgba(255, 215, 0, 0.4);
+        }
+
+        .frame-option.active i {
+            color: var(--dark);
+        }
+
+        .frame-option:active {
+            transform: scale(0.95);
+        }
+
+        /* Background Options - Mobile Optimized */
+        .bg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bg-option {
+            aspect-ratio: 1;
+            border-radius: 1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bg-option.active {
+            border-color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 0 1rem var(--primary);
+        }
+
+        .bg-option:active {
+            transform: scale(0.95);
+        }
+
+        .bg-option[data-bg="none"] {
+            background: #000;
+            border: 2px dashed rgba(255,215,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+
+        .bg-option[data-bg="gradient1"] { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .bg-option[data-bg="gradient2"] { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .bg-option[data-bg="gradient3"] { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .bg-option[data-bg="gradient4"] { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .bg-option[data-bg="gradient5"] { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .bg-option[data-bg="dark"] { background: #0a0a1a; }
+        .bg-option[data-bg="light"] { background: #f0f0ff; }
+
+        /* Download Button - Mobile Optimized */
+        .download-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            border: none;
+            padding: 1.2rem;
+            border-radius: 3rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 1.2rem 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 1rem 2rem rgba(255, 215, 0, 0.4);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .download-btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        /* Footer - Mobile Optimized */
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            background: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .brand-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .brand-link {
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3rem;
+            transition: all 0.2s;
+            font-size: 1rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .brand-link i {
+            color: var(--primary);
+            font-size: 1.3rem;
+            width: 1.8rem;
+        }
+
+        .brand-link:active {
+            background: var(--primary);
+            color: var(--dark);
+            transform: scale(0.98);
+        }
+
+        .brand-link:active i {
+            color: var(--dark);
+        }
+
+        .legend-footer {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-footer i {
+            -webkit-text-fill-color: initial;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        /* Touch optimization */
+        button, .ratio-btn, .frame-option, .bg-option, .brand-link, .upload-area {
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Scrollbar hiding but keeping functionality */
+        ::-webkit-scrollbar {
+            width: 0.3rem;
+            height: 0.3rem;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.3rem;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <div class="main-container">
+        <!-- Header with Logo and Social Links -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">L</div>
+                <div class="logo-text">
+                    <h1>LEGEND STUDIO</h1>
+                    <p>Mobile Video Editor</p>
+                </div>
+            </div>
+            <div class="social-links">
+                <a href="https://legend-mods-store.vercel.app/" target="_blank" class="social-link"><i class="fas fa-globe"></i></a>
+                <a href="https://t.me/legend_tool" target="_blank" class="social-link"><i class="fab fa-telegram"></i></a>
+                <a href="https://whatsapp.com/channel/0029VarS46O3QxRtTZO0z60x" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.youtube.com/@legendmod407" target="_blank" class="social-link"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+
+        <!-- Main Editor Grid -->
+        <div class="editor-grid">
+            <!-- Left: Preview Panel -->
+            <div class="preview-panel">
+                <div class="panel-title">
+                    <i class="fas fa-eye"></i> PREVIEW
+                </div>
+                
+                <!-- Aspect Ratio Selector -->
+                <div class="aspect-ratio-selector">
+                    <button class="ratio-btn active" data-ratio="mobile">
+                        <i class="fas fa-mobile-alt"></i> 9:16
+                    </button>
+                    <button class="ratio-btn" data-ratio="youtube">
+                        <i class="fab fa-youtube"></i> 16:9
+                    </button>
+                    <button class="ratio-btn" data-ratio="square">
+                        <i class="fas fa-square"></i> 1:1
+                    </button>
+                </div>
+
+                <!-- Video Preview with Mockup -->
+                <div class="video-container-wrapper" id="videoPreviewWrapper">
+                    <div class="mockup" id="mockupPhone">
+                        <div class="video-container" id="videoContainer">
+                            <video id="previewVideo" muted loop playsinline></video>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background Preview Note -->
+                <div style="text-align: center; margin-top: 0.8rem; color: var(--text-dim); font-size: 0.8rem;">
+                    <i class="fas fa-info-circle"></i> Background in final video
+                </div>
+            </div>
+
+            <!-- Right: Controls Panel -->
+            <div class="controls-panel">
+                <!-- Hidden File Input -->
+                <input type="file" id="videoInput" accept="video/*" capture="environment" style="display: none;">
+
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadBox">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h3>Upload Video</h3>
+                    <p>Tap to select</p>
+                    <button class="upload-btn" id="selectVideoBtn">
+                        <i class="fas fa-video"></i> Choose
+                    </button>
+                    <div id="fileDisplay" class="file-info"></div>
+                </div>
+
+                <!-- Frame Selection -->
+                <div class="section-title">
+                    <i class="fas fa-frame"></i> Frame Style
+                </div>
+                <div class="frame-grid" id="framePicker">
+                    <div class="frame-option active" data-frame="classic">
+                        <i class="fas fa-square"></i>
+                        <span>CLASSIC</span>
+                    </div>
+                    <div class="frame-option" data-frame="neon">
+                        <i class="fas fa-bolt"></i>
+                        <span>NEON</span>
+                    </div>
+                    <div class="frame-option" data-frame="gold">
+                        <i class="fas fa-crown"></i>
+                        <span>GOLD</span>
+                    </div>
+                    <div class="frame-option" data-frame="silver">
+                        <i class="fas fa-star"></i>
+                        <span>SILVER</span>
+                    </div>
+                </div>
+
+                <!-- Background Selection -->
+                <div class="section-title">
+                    <i class="fas fa-palette"></i> Background
+                </div>
+                <div class="bg-grid" id="bgPicker">
+                    <div class="bg-option active" data-bg="none"><i class="fas fa-ban"></i></div>
+                    <div class="bg-option" data-bg="gradient1"></div>
+                    <div class="bg-option" data-bg="gradient2"></div>
+                    <div class="bg-option" data-bg="gradient3"></div>
+                    <div class="bg-option" data-bg="gradient4"></div>
+                    <div class="bg-option" data-bg="gradient5"></div>
+                    <div class="bg-option" data-bg="dark"></div>
+                    <div class="bg-option" data-bg="light"></div>
+                    <div class="bg-option" data-bg="custom" style="background: repeating-linear-gradient(45deg, #ffd966, #ffd966 10px, #2a2a40 10px, #2a2a40 20px);">
+                        <i class="fas fa-plus" style="color: #ffd966;"></i>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button class="download-btn" id="downloadBtn" disabled>
+                    <i class="fas fa-download"></i> EXPORT
+                </button>
+
+                <!-- Reset Button -->
+                <button class="download-btn" id="resetBtn" style="background: linear-gradient(135deg, #4a4a70, #2a2a40); margin-top: 0.8rem;">
+                    <i class="fas fa-redo"></i> RESET
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer with All Links -->
+        <div class="footer">
+            <div class="brand-links">
+                <a href="https://legend-mods-store.vercel.app/" target="_blank" class="brand-link">
+                    <i class="fas fa-store"></i> LEGEND STORE
+                </a>
+                <a href="https://t.me/legend_tool" target="_blank" class="brand-link">
+                    <i class="fab fa-telegram"></i> TELEGRAM
+                </a>
+                <a href="https://whatsapp.com/channel/0029VarS46O3QxRtTZO0z60x" target="_blank" class="brand-link">
+                    <i class="fab fa-whatsapp"></i> WHATSAPP
+                </a>
+                <a href="https://www.youtube.com/@legendmod407" target="_blank" class="brand-link">
+                    <i class="fab fa-youtube"></i> YOUTUBE
+                </a>
+            </div>
+            <div class="legend-footer">
+                <i class="fas fa-bolt"></i> MADE BY LEGEND <i class="fas fa-bolt"></i>
+            </div>
+            <p style="color: var(--text-dim); margin-top: 1rem; font-size: 0.7rem;">
+                © 2026 LEGEND STUDIO
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM Elements
+            const videoInput = document.getElementById('videoInput');
+            const selectBtn = document.getElementById('selectVideoBtn');
+            const uploadBox = document.getElementById('uploadBox');
+            const fileDisplay = document.getElementById('fileDisplay');
+            const previewVideo = document.getElementById('previewVideo');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const frameOptions = document.querySelectorAll('.frame-option');
+            const bgOptions = document.querySelectorAll('.bg-option');
+            const ratioBtns = document.querySelectorAll('.ratio-btn');
+            const mockupPhone = document.getElementById('mockupPhone');
+            const videoContainer = document.getElementById('videoContainer');
+            const previewWrapper = document.getElementById('videoPreviewWrapper');
+
+            // State
+            let currentFrame = 'classic';
+            let currentBg = 'none';
+            let currentRatio = 'mobile';
+            let videoFile = null;
+            let videoURL = null;
+
+            // Initialize animated background
+            function initBackground() {
+                const bgAnimation = document.getElementById('bgAnimation');
+                for (let i = 0; i < 30; i++) { // Less particles for mobile
+                    const span = document.createElement('span');
+                    span.style.left = Math.random() * 100 + '%';
+                    span.style.animationDuration = 10 + Math.random() * 20 + 's';
+                    span.style.animationDelay = Math.random() * 10 + 's';
+                    span.style.width = span.style.height = 5 + Math.random() * 20 + 'px';
+                    bgAnimation.appendChild(span);
+                }
+            }
+            initBackground();
+
+            // Apply frame class
+            function setFrameClass(frameName) {
+                mockupPhone.classList.remove('frame-neon', 'frame-gold', 'frame-silver');
+                if (frameName === 'neon') {
+                    mockupPhone.classList.add('frame-neon');
+                } else if (frameName === 'gold') {
+                    mockupPhone.classList.add('frame-gold');
+                } else if (frameName === 'silver') {
+                    mockupPhone.classList.add('frame-silver');
+                }
+                
+                frameOptions.forEach(btn => {
+                    if (btn.dataset.frame === frameName) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Apply aspect ratio
+            function setAspectRatio(ratio) {
+                mockupPhone.classList.remove('youtube-size');
+                videoContainer.classList.remove('youtube-ratio');
+                
+                if (ratio === 'youtube') {
+                    mockupPhone.classList.add('youtube-size');
+                    videoContainer.classList.add('youtube-ratio');
+                } else if (ratio === 'square') {
+                    videoContainer.style.aspectRatio = '1/1';
+                } else {
+                    videoContainer.style.aspectRatio = '9/16';
+                }
+                
+                ratioBtns.forEach(btn => {
+                    if (btn.dataset.ratio === ratio) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Handle video selection
+            function handleVideo(file) {
+                if (!file) return;
+                if (!file.type.startsWith('video/')) {
+                    alert('Please select a video file');
+                    return;
+                }
+
+                videoFile = file;
+                
+                if (videoURL) {
+                    URL.revokeObjectURL(videoURL);
+                }
+                videoURL = URL.createObjectURL(file);
+                
+                previewVideo.src = videoURL;
+                previewVideo.load();
+                previewVideo.play().catch(e => console.log('autoplay failed'));
+                
+                fileDisplay.innerHTML = `<i class="fas fa-check-circle"></i> ${file.name.substring(0, 20)}...`;
+                downloadBtn.disabled = false;
+            }
+
+            // Event Listeners
+            selectBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                videoInput.click();
+            });
+            
+            uploadBox.addEventListener('click', () => videoInput.click());
+
+            videoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) handleVideo(file);
+            });
+
+            // Frame selection
+            frameOptions.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const frame = btn.dataset.frame;
+                    currentFrame = frame;
+                    setFrameClass(frame);
+                });
+            });
+
+            // Background selection
+            bgOptions.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    bgOptions.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentBg = btn.dataset.bg;
+                    
+                    // Apply background to preview wrapper
+                    if (currentBg === 'none') {
+                        previewWrapper.style.background = 'rgba(0, 0, 0, 0.3)';
+                    } else if (currentBg === 'gradient1') {
+                        previewWrapper.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    } else if (currentBg === 'gradient2') {
+                        previewWrapper.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+                    } else if (currentBg === 'gradient3') {
+                        previewWrapper.style.background = 'linear-gradient(135deg, #4facfe, #00f2fe)';
+                    } else if (currentBg === 'gradient4') {
+                        previewWrapper.style.background = 'linear-gradient(135deg, #43e97b, #38f9d7)';
+                    } else if (currentBg === 'gradient5') {
+                        previewWrapper.style.background = 'linear-gradient(135deg, #fa709a, #fee140)';
+                    } else if (currentBg === 'dark') {
+                        previewWrapper.style.background = '#0a0a1a';
+                    } else if (currentBg === 'light') {
+                        previewWrapper.style.background = '#f0f0ff';
+                    } else if (currentBg === 'custom') {
+                        previewWrapper.style.background = 'repeating-linear-gradient(45deg, #ffd966, #ffd966 10px, #2a2a40 10px, #2a2a40 20px)';
+                    }
+                });
+            });
+
+            // Aspect ratio selection
+            ratioBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const ratio = btn.dataset.ratio;
+                    currentRatio = ratio;
+                    setAspectRatio(ratio);
+                });
+            });
+
+            // Reset
+            resetBtn.addEventListener('click', () => {
+                previewVideo.pause();
+                previewVideo.src = '';
+                if (videoURL) {
+                    URL.revokeObjectURL(videoURL);
+                    videoURL = null;
+                }
+                videoFile = null;
+                fileDisplay.innerHTML = '';
+                downloadBtn.disabled = true;
+                videoInput.value = '';
+                
+                currentFrame = 'classic';
+                currentBg = 'none';
+                currentRatio = 'mobile';
+                
+                setFrameClass('classic');
+                setAspectRatio('mobile');
+                
+                bgOptions.forEach(b => {
+                    if (b.dataset.bg === 'none') {
+                        b.classList.add('active');
+                    } else {
+                        b.classList.remove('active');
+                    }
+                });
+                
+                previewWrapper.style.background = 'rgba(0, 0, 0, 0.3)';
+            });
+
+            // Download with all effects
+            downloadBtn.addEventListener('click', async function() {
+                if (!previewVideo.src || !videoFile) {
+                    alert('Please select a video first');
+                    return;
+                }
+
+                try {
+                    downloadBtn.disabled = true;
+                    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> PROCESSING...';
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    if (currentRatio === 'youtube') {
+                        canvas.width = 1280; // Smaller for mobile
+                        canvas.height = 720;
+                    } else if (currentRatio === 'square') {
+                        canvas.width = 720;
+                        canvas.height = 720;
+                    } else {
+                        canvas.width = 720;
+                        canvas.height = 1280;
+                    }
+
+                    // Draw background
+                    if (currentBg === 'gradient1') {
+                        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        gradient.addColorStop(0, '#667eea');
+                        gradient.addColorStop(1, '#764ba2');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'gradient2') {
+                        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        gradient.addColorStop(0, '#f093fb');
+                        gradient.addColorStop(1, '#f5576c');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'gradient3') {
+                        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        gradient.addColorStop(0, '#4facfe');
+                        gradient.addColorStop(1, '#00f2fe');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'gradient4') {
+                        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        gradient.addColorStop(0, '#43e97b');
+                        gradient.addColorStop(1, '#38f9d7');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'gradient5') {
+                        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        gradient.addColorStop(0, '#fa709a');
+                        gradient.addColorStop(1, '#fee140');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'dark') {
+                        ctx.fillStyle = '#0a0a1a';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'light') {
+                        ctx.fillStyle = '#f0f0ff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    } else if (currentBg === 'custom') {
+                        const pattern = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        pattern.addColorStop(0, '#ffd966');
+                        pattern.addColorStop(0.5, '#2a2a40');
+                        pattern.addColorStop(1, '#ffd966');
+                        ctx.fillStyle = pattern;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+
+                    // Draw video
+                    const videoAspect = previewVideo.videoWidth / previewVideo.videoHeight;
+                    const canvasAspect = canvas.width / canvas.height;
+                    
+                    let drawWidth, drawHeight, drawX, drawY;
+                    const padding = 30;
+
+                    if (videoAspect > canvasAspect) {
+                        drawHeight = canvas.height - padding * 2;
+                        drawWidth = drawHeight * videoAspect;
+                        drawX = (canvas.width - drawWidth) / 2;
+                        drawY = padding;
+                    } else {
+                        drawWidth = canvas.width - padding * 2;
+                        drawHeight = drawWidth / videoAspect;
+                        drawX = padding;
+                        drawY = (canvas.height - drawHeight) / 2;
+                    }
+
+                    ctx.drawImage(previewVideo, drawX, drawY, drawWidth, drawHeight);
+
+                    // Draw frame
+                    ctx.save();
+                    ctx.shadowBlur = 20;
+                    ctx.lineWidth = 8;
+
+                    if (currentFrame === 'neon') {
+                        ctx.shadowColor = '#00ffff';
+                        ctx.strokeStyle = '#ff00ff';
+                        ctx.strokeRect(drawX - 4, drawY - 4, drawWidth + 8, drawHeight + 8);
+                        
+                        ctx.shadowColor = '#ff00ff';
+                        ctx.strokeStyle = '#00ffff';
+                        ctx.lineWidth = 4;
+                        ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
+                    } else if (currentFrame === 'gold') {
+                        ctx.shadowColor = '#ffaa00';
+                        ctx.strokeStyle = '#ffd966';
+                        ctx.lineWidth = 10;
+                        ctx.strokeRect(drawX - 5, drawY - 5, drawWidth + 10, drawHeight + 10);
+                        
+                        ctx.shadowColor = '#b8860b';
+                        ctx.strokeStyle = '#ffaa00';
+                        ctx.lineWidth = 5;
+                        ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
+                    } else if (currentFrame === 'silver') {
+                        ctx.shadowColor = '#ffffff';
+                        ctx.strokeStyle = '#e0e0e0';
+                        ctx.lineWidth = 10;
+                        ctx.strokeRect(drawX - 5, drawY - 5, drawWidth + 10, drawHeight + 10);
+                        
+                        ctx.shadowColor = '#a0a0a0';
+                        ctx.strokeStyle = '#c0c0c0';
+                        ctx.lineWidth = 5;
+                        ctx.strokeRect(drawX - 2, drawY - 2, drawWidth + 4, drawHeight + 4);
+                    } else {
+                        ctx.shadowColor = '#ffd966';
+                        ctx.strokeStyle = '#4a4a70';
+                        ctx.lineWidth = 5;
+                        ctx.strokeRect(drawX - 3, drawY - 3, drawWidth + 6, drawHeight + 6);
+                        
+                        ctx.shadowColor = '#ffd966';
+                        ctx.strokeStyle = '#ffd966';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(drawX - 1, drawY - 1, drawWidth + 2, drawHeight + 2);
+                    }
+                    ctx.restore();
+
+                    // Add watermark
+                    ctx.font = 'bold 30px "Segoe UI", Arial';
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.7)';
+                    ctx.shadowColor = '#000';
+                    ctx.shadowBlur = 10;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('⚡ LEGEND ⚡', canvas.width/2, canvas.height - 40);
+                    ctx.shadowBlur = 0;
+
+                    // Download as PNG (simpler for mobile)
+                    const link = document.createElement('a');
+                    link.download = `LEGEND_${currentFrame}_${Date.now()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    downloadBtn.innerHTML = '<i class="fas fa-check"></i> EXPORTED!';
+                    setTimeout(() => {
+                        downloadBtn.innerHTML = '<i class="fas fa-download"></i> EXPORT';
+                        downloadBtn.disabled = false;
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Export error:', error);
+                    alert('Export failed. Please try again.');
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '<i class="fas fa-download"></i> EXPORT';
+                }
+            });
+
+            // Loop video
+            previewVideo.addEventListener('ended', () => {
+                previewVideo.play().catch(e => {});
+            });
+
+            // Initial setup
+            setFrameClass('classic');
+            setAspectRatio('mobile');
+        })();
+    </script>
+</body>
+</html>
